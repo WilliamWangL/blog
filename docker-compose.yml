@@ -1,0 +1,93 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: techreview-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: techreview_blog
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - techreview-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: techreview-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - techreview-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./blog-backend
+      dockerfile: Dockerfile
+    container_name: techreview-backend
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USERNAME: root
+      DB_PASSWORD: rootpassword
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: techreview-blog-secret-key-2024
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - techreview-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./blog-frontend
+      dockerfile: Dockerfile
+    container_name: techreview-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - techreview-network
+    restart: unless-stopped
+
+  admin:
+    build:
+      context: ./blog-admin
+      dockerfile: Dockerfile
+    container_name: techreview-admin
+    ports:
+      - "3001:80"
+    depends_on:
+      - backend
+    networks:
+      - techreview-network
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+
+networks:
+  techreview-network:
+    driver: bridge
