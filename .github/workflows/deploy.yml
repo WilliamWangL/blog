@@ -1,0 +1,49 @@
+name: Deploy to Private Server
+
+on:
+  push:
+    branches:
+      - main  # 当推送到 main 分支时自动触发
+  workflow_dispatch: # 允许在 GitHub Actions 页面手动触发
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Deploy files to Server
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          ARGS: "-rlgoDzvc -i --delete"
+          SOURCE: "./"
+          REMOTE_HOST: ${{ secrets.SERVER_HOST }}
+          REMOTE_USER: ${{ secrets.SERVER_USER }}
+          REMOTE_PORT: ${{ secrets.SERVER_PORT || 22 }}
+          TARGET: "/opt/techreview-blog" # 服务器上的部署目录
+          EXCLUDE: "/.git/, /node_modules/, /.npm-cache/, /.qoder/, /.vscode/, /terminals/, /.cursor/"
+          
+      - name: Run deployment script
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          script: |
+            cd /opt/techreview-blog
+            
+            # 赋予脚本执行权限
+            chmod +x deploy-production.sh
+            chmod +x deploy.sh
+            
+            # 执行生产环境部署脚本
+            # deploy-production.sh 包含了自动安装 Docker/Nginx、构建、起服务以及配置 SSL 的全套流程。
+            # 如果服务器是非 root 用户，请确保该用户具有免密 sudo 权限，或者直接使用 root 账户部署。
+            sudo ./deploy-production.sh ${{ secrets.DOMAIN_NAME }} ${{ secrets.SSL_EMAIL }}
+            
+            # 备用方案：如果您暂无域名/不配置SSL，可以注释掉上面那行，改用下面的常规部署：
+            # sudo ./deploy.sh production

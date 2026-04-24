@@ -75,7 +75,7 @@ server {
 
 server {
     listen 80;
-    server_name admin.DOMAIN_PLACEHOLDER;
+    server_name blog-admin.DOMAIN_PLACEHOLDER;
     
     location / {
         proxy_pass http://localhost:3001;
@@ -103,7 +103,7 @@ EOF
 # Setup SSL certificate
 setup_ssl() {
     log "Setting up SSL certificate..."
-    certbot --nginx -d $DOMAIN -d admin.$DOMAIN --non-interactive --agree-tos --email $EMAIL
+    certbot --nginx -d $DOMAIN -d blog-admin.$DOMAIN --non-interactive --agree-tos --email $EMAIL
     
     # Auto-renewal cron job
     (crontab -l 2>/dev/null; echo "0 12 * * * /usr/bin/certbot renew --quiet") | crontab -
@@ -162,6 +162,8 @@ services:
       context: ./blog-frontend
       dockerfile: Dockerfile
     container_name: techreview-frontend
+    ports:
+      - "3000:80"
     networks:
       - techreview-network
     depends_on:
@@ -173,6 +175,8 @@ services:
       context: ./blog-admin
       dockerfile: Dockerfile
     container_name: techreview-admin
+    ports:
+      - "3001:80"
     networks:
       - techreview-network
     depends_on:
@@ -221,7 +225,7 @@ main() {
     log ""
     log "Your website is now available at:"
     log "  https://$DOMAIN"
-    log "  https://admin.$DOMAIN"
+    log "  https://blog-admin.$DOMAIN"
     log ""
     log "Default login:"
     log "  Admin:  admin / admin123"

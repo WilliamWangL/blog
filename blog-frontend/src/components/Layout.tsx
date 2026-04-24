@@ -35,19 +35,19 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <div className={isDark ? 'dark' : ''}>
-      <nav className="fixed top-0 w-full z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
+      <nav className="fixed top-0 w-full z-50 bg-white/70 dark:bg-black/70 backdrop-blur-xl border-b border-gray-100 dark:border-gray-800/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
-              <Link to="/" className="text-2xl font-bold gradient-text">
+              <Link to="/" className="text-xl font-light tracking-widest uppercase gradient-text">
                 TechReview
               </Link>
-              <div className="hidden md:flex space-x-6">
+              <div className="hidden md:flex space-x-8 ml-8">
                 {navLinks.map((link) => (
                   <Link
                     key={link.name}
                     to={link.href}
-                    className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 font-medium"
+                    className="text-sm uppercase tracking-widest text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -62,9 +62,9 @@ export default function Layout({ children }: LayoutProps) {
                     placeholder="Search..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-48 pl-10 pr-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-48 pl-10 pr-4 py-2 rounded-full bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors"
                   />
-                  <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
+                  <Search className="absolute left-4 top-2.5 w-4 h-4 text-gray-400" />
                 </div>
               </form>
               <button
