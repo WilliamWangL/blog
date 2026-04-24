@@ -27,10 +27,11 @@ export default function Layout({ children }: LayoutProps) {
 
   const navLinks = [
     { name: 'Home', href: '/' },
-    { name: 'Tech', href: '/category/tech' },
-    { name: 'Home Appliances', href: '/category/home-appliances' },
-    { name: 'Auto', href: '/category/auto' },
-    { name: 'Lifestyle', href: '/category/lifestyle' },
+    { name: '美妆', href: '/category/beauty' },
+    { name: 'Living', href: '/category/living' },
+    { name: '旅行', href: '/category/travel' },
+    { name: '3C家电', href: '/category/3c-appliances' },
+    { name: '时尚', href: '/category/fashion' },
   ]
 
   return (

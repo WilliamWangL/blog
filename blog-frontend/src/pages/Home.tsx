@@ -1,21 +1,23 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { Smartphone, Laptop, Home as HomeIcon, Zap, Eye, Heart, ArrowRight } from 'lucide-react'
+import { Smartphone, Home as HomeIcon, Plane, Sparkles, Shirt, Eye, Heart, ArrowRight } from 'lucide-react'
 import { articleApi, categoryApi } from '@/utils/api'
 import type { Article, Category } from '@/types'
 
 const categoryIcons: Record<string, React.ReactNode> = {
-  smartphones: <Smartphone className="w-8 h-8 stroke-[1.5]" />,
-  laptops: <Laptop className="w-8 h-8 stroke-[1.5]" />,
-  'smart-home': <HomeIcon className="w-8 h-8 stroke-[1.5]" />,
-  accessories: <Zap className="w-8 h-8 stroke-[1.5]" />,
+  beauty: <Sparkles className="w-8 h-8 stroke-[1.5]" />,
+  living: <HomeIcon className="w-8 h-8 stroke-[1.5]" />,
+  travel: <Plane className="w-8 h-8 stroke-[1.5]" />,
+  '3c-appliances': <Smartphone className="w-8 h-8 stroke-[1.5]" />,
+  fashion: <Shirt className="w-8 h-8 stroke-[1.5]" />,
 }
 
 const categoryColors: Record<string, string> = {
-  smartphones: 'from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900',
-  laptops: 'from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900',
-  'smart-home': 'from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900',
-  accessories: 'from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900',
+  beauty: 'from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900',
+  living: 'from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900',
+  travel: 'from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900',
+  '3c-appliances': 'from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900',
+  fashion: 'from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900',
 }
 
 export default function Home() {

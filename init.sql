@@ -145,21 +145,20 @@ VALUES ('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iAt6Z5EO',
 INSERT INTO sys_user (username, password, email, nickname, role, status) 
 VALUES ('editor', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iAt6Z5EO', 'editor@techreview.com', 'Editor', 'EDITOR', 1);
 
--- Insert default categories
+-- Insert default categories (High-end Editorial Style)
 INSERT INTO category (name, slug, description, color, sort_order) VALUES
-('Smartphones', 'smartphones', 'Latest smartphone reviews and comparisons', '#3b82f6', 1),
-('Laptops', 'laptops', 'Professional laptop reviews for work and gaming', '#8b5cf6', 2),
-('Smart Home', 'smart-home', 'Smart home devices and automation', '#f97316', 3),
-('Accessories', 'accessories', 'Tech accessories and peripherals', '#22c55e', 4),
-('Audio', 'audio', 'Headphones, speakers and audio equipment', '#ec4899', 5),
-('Cameras', 'cameras', 'Digital cameras and photography gear', '#14b8a6', 6);
+('美妆', 'beauty', 'Discover the art of cosmetics and skincare.', '#1A1A1A', 1),
+('Living', 'living', 'Intelligent design for modern architectural spaces.', '#2A2A2A', 2),
+('旅行', 'travel', 'Curated experiences and gear for the global explorer.', '#3A3A3A', 3),
+('3C家电', '3c-appliances', 'Cutting-edge electronics and smart home innovations.', '#111111', 4),
+('时尚', 'fashion', 'Avant-garde apparel and timeless style statements.', '#0A0A0A', 5);
 
--- Insert sample article
+-- Insert sample article (High-end Editorial Style)
 INSERT INTO article (title, slug, summary, content, category_id, author_id, status, is_featured, published_at, view_count, like_count, rating) 
 VALUES (
-    'iPhone 16 Pro Max Review: Is It Worth the Upgrade?',
-    'iphone-16-pro-max-review',
-    'After two weeks of intensive use, we comprehensively analyze this flagship phone performance in camera, battery life, and more...',
-    '<h2>Introduction</h2><p>The iPhone 16 Pro Max represents Apple latest flagship offering...</p><h2>Design and Build Quality</h2><p>The device features a premium titanium construction...</p><h2>Camera Performance</h2><p>The new 48MP main sensor delivers exceptional results...</p><h2>Battery Life</h2><p>With a 4,685 mAh battery, the device easily lasts a full day...</p><h2>Conclusion</h2><p>The iPhone 16 Pro Max is a worthy upgrade for those coming from older models...</p>',
-    1, 1, 1, TRUE, NOW(), 12500, 856, 4.5
+    'Leica Q3 Monochrom: The Art of Pure Light',
+    'leica-q3-monochrom-review',
+    'Stripping away color forces a profound confrontation with light, shadow, and texture. Our in-depth exploration of Leica''s latest masterpiece.',
+    '<h2>The Philosophy of Black and White</h2><p>In an era obsessed with hyper-saturation and computational photography, the Leica Q3 Monochrom stands as a bold statement of reduction. By removing the Bayer filter, the sensor captures pure luminance, resulting in files with extraordinary dynamic range and virtually nonexistent noise, even in the darkest of environments.</p><h2>Design and Craftsmanship</h2><p>Machined from solid brass and wrapped in premium leather, the device feels less like a consumer gadget and more like a precision instrument. The absence of the iconic red dot—replaced by subtle monochrome engravings—speaks to its understated elegance. It demands to be held, its cold metal body a constant reminder of its mechanical heritage.</p><h2>Optical Excellence</h2><p>The Summilux 28mm f/1.7 ASPH lens resolves detail with a biting sharpness that computational algorithms simply cannot synthesize. The micro-contrast is breathtaking, rendering textures—from the rough grain of concrete to the delicate weave of a fabric—with an almost three-dimensional presence.</p><h2>The Verdict</h2><p>The Leica Q3 Monochrom is unapologetically uncompromising. It is not a camera for everyone. It is a tool for those who understand that sometimes, removing information is the only way to reveal the truth.</p>',
+    5, 1, 1, TRUE, NOW(), 28400, 1856, 4.9
 );

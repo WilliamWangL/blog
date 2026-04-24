@@ -18,17 +18,20 @@ export default function SearchPage() {
   const articles = data?.data?.data?.records || []
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50/50 dark:bg-black/20">
       {/* Search Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex items-center space-x-3 mb-4">
-            <Search className="w-8 h-8 text-primary-600" />
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+      <div className="bg-white dark:bg-black border-b border-gray-100 dark:border-gray-800/50 pt-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="flex items-center space-x-3 text-xs tracking-widest uppercase text-gray-400 dark:text-gray-500 mb-6 font-medium">
+            <span>Search</span>
+          </div>
+          <div className="flex items-center space-x-4 mb-6">
+            <Search className="w-10 h-10 text-gray-300 dark:text-gray-600 stroke-[1.5]" />
+            <h1 className="text-4xl md:text-6xl font-light tracking-tight text-gray-900 dark:text-white">
               Search Results
             </h1>
           </div>
-          <p className="text-lg text-gray-600 dark:text-gray-400">
+          <p className="text-xl text-gray-500 dark:text-gray-400 font-light">
             {query ? `Showing results for "${query}"` : 'Enter a search term to find reviews'}
           </p>
         </div>
@@ -72,34 +75,38 @@ export default function SearchPage() {
 
 function ArticleCard({ article }: { article: Article }) {
   return (
-    <article className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm card-hover group">
+    <article className="bg-white dark:bg-gray-900 rounded-3xl overflow-hidden card-hover group border border-gray-100 dark:border-gray-800">
       <Link to={`/article/${article.slug}`}>
-        <div className="aspect-video bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 relative overflow-hidden">
+        <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-800 relative overflow-hidden">
           {article.coverImage ? (
-            <img src={article.coverImage} alt={article.title} className="w-full h-full object-cover" />
+            <img src={article.coverImage} alt={article.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-              <span className="text-4xl">📱</span>
+            <div className="absolute inset-0 flex items-center justify-center text-gray-300 dark:text-gray-600">
+              <span className="text-4xl opacity-50 grayscale">📱</span>
             </div>
           )}
         </div>
-        <div className="p-6">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
+        <div className="p-8">
+          <div className="flex items-center space-x-2 text-xs uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-4 font-medium">
+            <span>Review</span>
+            <span>·</span>
+            <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
+          </div>
+          <h3 className="text-2xl font-light tracking-tight text-gray-900 dark:text-white mb-3 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors line-clamp-2">
             {article.title}
           </h3>
-          <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-4">
+          <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed line-clamp-2 mb-6 font-light">
             {article.summary}
           </p>
-          <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-            <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
-            <div className="flex items-center space-x-4">
-              <span className="flex items-center space-x-1">
-                <Eye className="w-4 h-4" />
-                <span>{article.viewCount?.toLocaleString() || 0}</span>
+          <div className="flex items-center justify-between pt-6 border-t border-gray-100 dark:border-gray-800">
+            <div className="flex items-center space-x-6 text-sm text-gray-400 dark:text-gray-500">
+              <span className="flex items-center space-x-2">
+                <Eye className="w-4 h-4 stroke-[1.5]" />
+                <span className="font-light">{article.viewCount?.toLocaleString() || 0}</span>
               </span>
-              <span className="flex items-center space-x-1">
-                <Heart className="w-4 h-4" />
-                <span>{article.likeCount || 0}</span>
+              <span className="flex items-center space-x-2">
+                <Heart className="w-4 h-4 stroke-[1.5]" />
+                <span className="font-light">{article.likeCount || 0}</span>
               </span>
             </div>
           </div>

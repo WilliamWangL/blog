@@ -35,35 +35,35 @@ export default function ArticleDetail() {
   }
 
   return (
-    <article className="min-h-screen bg-white dark:bg-gray-900">
+    <article className="min-h-screen bg-white dark:bg-black">
       {/* Header */}
-      <div className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Link to="/" className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-primary-600 mb-6">
-            <ArrowLeft className="w-4 h-4 mr-2" />
+      <div className="bg-white dark:bg-black border-b border-gray-100 dark:border-gray-800/50 pt-24">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+          <Link to="/" className="inline-flex items-center text-xs tracking-widest uppercase font-medium text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-12 group">
+            <ArrowLeft className="w-4 h-4 mr-3 group-hover:-translate-x-1 transition-transform" />
             Back to Home
           </Link>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-4xl md:text-6xl font-light tracking-tight text-gray-900 dark:text-white mb-8 leading-tight">
             {article.title}
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
+          <p className="text-xl text-gray-500 dark:text-gray-400 mb-12 font-light leading-relaxed max-w-2xl mx-auto">
             {article.summary}
           </p>
-          <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500 dark:text-gray-400">
+          <div className="flex flex-wrap items-center justify-center gap-8 text-xs tracking-widest uppercase text-gray-400 dark:text-gray-500 font-medium">
             <div className="flex items-center space-x-2">
-              <User className="w-4 h-4" />
+              <User className="w-4 h-4 stroke-[1.5]" />
               <span>TechReview Team</span>
             </div>
             <div className="flex items-center space-x-2">
-              <Calendar className="w-4 h-4" />
+              <Calendar className="w-4 h-4 stroke-[1.5]" />
               <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
             </div>
             <div className="flex items-center space-x-2">
-              <Eye className="w-4 h-4" />
+              <Eye className="w-4 h-4 stroke-[1.5]" />
               <span>{article.viewCount?.toLocaleString()} views</span>
             </div>
             <div className="flex items-center space-x-2">
-              <Heart className="w-4 h-4" />
+              <Heart className="w-4 h-4 stroke-[1.5]" />
               <span>{article.likeCount} likes</span>
             </div>
           </div>
@@ -72,15 +72,15 @@ export default function ArticleDetail() {
 
       {/* Cover Image */}
       {article.coverImage && (
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4">
-          <div className="aspect-video rounded-2xl overflow-hidden shadow-lg">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
+          <div className="aspect-[21/9] rounded-3xl overflow-hidden shadow-2xl border border-gray-100 dark:border-gray-800">
             <img src={article.coverImage} alt={article.title} className="w-full h-full object-cover" />
           </div>
         </div>
       )}
 
       {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="prose dark:prose-invert prose-lg max-w-none">
           <div dangerouslySetInnerHTML={{ __html: article.content }} />
         </div>
