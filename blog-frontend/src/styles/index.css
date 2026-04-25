@@ -72,3 +72,112 @@
     overflow: hidden;
   }
 }
+/* =============== THEME OVERRIDES =============== */
+
+/* --- Organic / Wabi-Sabi Theme --- */
+.theme-organic body {
+  background-color: #fdfbf7 !important;
+  color: #4a4238 !important;
+}
+
+/* Backgrounds */
+.theme-organic .bg-white,
+.theme-organic .bg-gray-50,
+.theme-organic .bg-gray-100,
+.theme-organic .dark\:bg-black,
+.theme-organic .dark\:bg-gray-900,
+.theme-organic .dark\:bg-gray-800 {
+  background-color: #fdfbf7 !important;
+}
+
+.theme-organic .hero-gradient {
+  background: linear-gradient(135deg, #e3dcd2 0%, #f4eee6 100%) !important;
+  color: #3e3832 !important;
+}
+
+.theme-organic .hero-gradient .bg-clip-text {
+  background-image: linear-gradient(to right, #8a7c6b, #c2b5a3) !important;
+}
+
+.theme-organic .bg-black\/40 {
+  background-color: rgba(62, 56, 50, 0.1) !important;
+}
+
+/* Borders */
+.theme-organic .border-gray-100,
+.theme-organic .border-gray-200,
+.theme-organic .dark\:border-gray-800,
+.theme-organic .dark\:border-gray-700 {
+  border-color: #eaddcf !important;
+}
+
+/* Text Colors */
+.theme-organic .text-gray-900,
+.theme-organic .dark\:text-white {
+  color: #3e3832 !important;
+}
+
+.theme-organic .text-white {
+  color: #fdfbf7 !important;
+}
+
+.theme-organic .text-black,
+.theme-organic .dark\:text-black {
+  color: #3e3832 !important;
+}
+
+.theme-organic .text-gray-500,
+.theme-organic .dark\:text-gray-400,
+.theme-organic .text-gray-400,
+.theme-organic .dark\:text-gray-500,
+.theme-organic .text-gray-300 {
+  color: #8a7c6b !important;
+}
+
+/* Cards & Layout */
+.theme-organic .rounded-3xl,
+.theme-organic .rounded-\[2\.5rem\] {
+  border-radius: 2rem !important;
+  box-shadow: 0 10px 40px -10px rgba(138, 124, 107, 0.15) !important;
+}
+
+.theme-organic .card-hover:hover {
+  box-shadow: 0 25px 50px -15px rgba(138, 124, 107, 0.25) !important;
+}
+
+.theme-organic .gradient-text {
+  background: linear-gradient(135deg, #4a4238 0%, #8a7c6b 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* Button & Nav Glass */
+.theme-organic .nav-glass {
+  background-color: rgba(253, 251, 247, 0.8) !important;
+  border-bottom-color: #eaddcf !important;
+}
+
+.theme-organic .bg-black,
+.theme-organic .dark\:bg-white {
+  background-color: #3e3832 !important;
+}
+
+.theme-organic .hover\:bg-gray-100:hover,
+.theme-organic .dark\:hover\:bg-gray-800:hover {
+  background-color: #eaddcf !important;
+}
+
+.theme-organic .hover\:bg-gray-800:hover,
+.theme-organic .dark\:hover\:bg-gray-100:hover {
+  background-color: #2c2723 !important;
+}
+
+.theme-organic .border-white\/20 {
+  border-color: rgba(62, 56, 50, 0.2) !important;
+}
+
+.theme-organic .hover\:bg-white\/10:hover {
+  background-color: rgba(62, 56, 50, 0.05) !important;
+}
+
+

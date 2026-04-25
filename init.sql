@@ -147,11 +147,11 @@ VALUES ('editor', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iAt6Z5EO'
 
 -- Insert default categories (High-end Editorial Style)
 INSERT INTO category (name, slug, description, color, sort_order) VALUES
-('美妆', 'beauty', 'Discover the art of cosmetics and skincare.', '#1A1A1A', 1),
+('Beauty', 'beauty', 'Discover the art of cosmetics and skincare.', '#1A1A1A', 1),
 ('Living', 'living', 'Intelligent design for modern architectural spaces.', '#2A2A2A', 2),
-('旅行', 'travel', 'Curated experiences and gear for the global explorer.', '#3A3A3A', 3),
-('3C家电', '3c-appliances', 'Cutting-edge electronics and smart home innovations.', '#111111', 4),
-('时尚', 'fashion', 'Avant-garde apparel and timeless style statements.', '#0A0A0A', 5);
+('Travel', 'travel', 'Curated experiences and gear for the global explorer.', '#3A3A3A', 3),
+('Appliances', '3c-appliances', 'Cutting-edge electronics and smart home innovations.', '#111111', 4),
+('Fashion', 'fashion', 'Avant-garde apparel and timeless style statements.', '#0A0A0A', 5);
 
 -- Insert sample article (High-end Editorial Style)
 INSERT INTO article (title, slug, summary, content, category_id, author_id, status, is_featured, published_at, view_count, like_count, rating) 
