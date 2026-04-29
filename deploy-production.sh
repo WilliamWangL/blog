@@ -1,235 +1,97 @@
 #!/bin/bash
 
-# TechReview Blog Production Deployment Script
-# For production servers with SSL and domain
+# TechReview Blog 生产环境部署脚本 (不含 Nginx 配置)
+# 适用：宿主机已手动配置 Nginx，且已安装 Docker, MySQL, Redis
 
 set -e
 
+# --- 配置参数 ---
 DOMAIN=${1:-}
-EMAIL=${2:-}
+DB_PASS=${2:-}
+DB_USER=${3:-"root"}
+REDIS_PASS=${4:-""} 
 
-if [ -z "$DOMAIN" ]; then
-    echo "Usage: ./deploy-production.sh <domain> <email>"
-    echo "Example: ./deploy-production.sh techreview.com admin@techreview.com"
+# Docker 访问宿主机的默认 IP (用于连接宿主机的 MySQL 和 Redis)
+HOST_IP="172.17.0.1"
+
+if [ -z "$DOMAIN" ] || [ -z "$DB_PASS" ]; then
+    echo "用法: ./deploy.sh <域名> <数据库密码> [数据库用户] [Redis密码]"
+    echo "示例: ./deploy.sh techreview.com root_password root redis_password"
     exit 1
 fi
 
-if [ -z "$EMAIL" ]; then
-    echo "Email is required for SSL certificate"
-    exit 1
-fi
+log() { echo -e "\033[32m[INFO]\033[0m $1"; }
 
-log() {
-    echo "[INFO] $1"
-}
-
-# Install Docker if not present
-install_docker() {
-    if ! command -v docker &> /dev/null; then
-        log "Installing Docker..."
-        curl -fsSL https://get.docker.com -o get-docker.sh
-        sh get-docker.sh
-        rm get-docker.sh
-        usermod -aG docker $USER
-        systemctl enable docker
-        systemctl start docker
-    fi
-    
-    if ! command -v docker-compose &> /dev/null; then
-        log "Installing Docker Compose..."
-        curl -L "https://github.com/docker/compose/releases/download/v2.23.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-        chmod +x /usr/local/bin/docker-compose
+# 1. 编译后端
+build_backend() {
+    log "正在通过 Docker 编译 Java 后端..."
+    if [ -d "blog-backend" ]; then
+        cd blog-backend
+        docker run --rm -v "$(pwd)":/app -w /app maven:3.9-eclipse-temurin-21-alpine \
+            mvn clean package -DskipTests
+        cd ..
+    else
+        log "错误: 未找到 blog-backend 目录"
+        exit 1
     fi
 }
 
-# Install Nginx and Certbot
-install_nginx() {
-    if ! command -v nginx &> /dev/null; then
-        log "Installing Nginx..."
-        apt-get update
-        apt-get install -y nginx certbot python3-certbot-nginx
-    fi
-}
-
-# Setup Nginx configuration
-setup_nginx() {
-    log "Setting up Nginx configuration..."
-    
-    cat > /etc/nginx/sites-available/techreview << 'EOF'
-server {
-    listen 80;
-    server_name DOMAIN_PLACEHOLDER;
-    
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
-
-server {
-    listen 80;
-    server_name blog-admin.DOMAIN_PLACEHOLDER;
-    
-    location / {
-        proxy_pass http://localhost:3001;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
-EOF
-    
-    sed -i "s/DOMAIN_PLACEHOLDER/$DOMAIN/g" /etc/nginx/sites-available/techreview
-    
-    ln -sf /etc/nginx/sites-available/techreview /etc/nginx/sites-enabled/
-    rm -f /etc/nginx/sites-enabled/default
-    
-    nginx -t
-    systemctl restart nginx
-}
-
-# Setup SSL certificate
-setup_ssl() {
-    log "Setting up SSL certificate..."
-    certbot --nginx -d $DOMAIN -d blog-admin.$DOMAIN --non-interactive --agree-tos --email $EMAIL
-    
-    # Auto-renewal cron job
-    (crontab -l 2>/dev/null; echo "0 12 * * * /usr/bin/certbot renew --quiet") | crontab -
-}
-
-# Create production docker-compose
+# 2. 生成 Docker Compose (仅包含应用容器)
 setup_docker_compose() {
-    log "Creating production docker-compose.yml..."
-    
+    log "生成 docker-compose.prod.yml..."
     cat > docker-compose.prod.yml << EOF
 version: '3.8'
-
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: techreview-mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: $(openssl rand -base64 32)
-      MYSQL_DATABASE: techreview_blog
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - techreview-network
-    restart: unless-stopped
-
-  redis:
-    image: redis:7-alpine
-    container_name: techreview-redis
-    networks:
-      - techreview-network
-    restart: unless-stopped
-
   backend:
-    build:
-      context: ./blog-backend
-      dockerfile: Dockerfile
+    build: ./blog-backend
     container_name: techreview-backend
     environment:
-      DB_HOST: mysql
+      DB_HOST: $HOST_IP
       DB_PORT: 3306
-      DB_USERNAME: root
-      DB_PASSWORD: \${MYSQL_ROOT_PASSWORD}
-      REDIS_HOST: redis
+      DB_USERNAME: $DB_USER
+      DB_PASSWORD: $DB_PASS
+      REDIS_HOST: $HOST_IP
       REDIS_PORT: 6379
+      REDIS_PASSWORD: $REDIS_PASS
       JWT_SECRET: $(openssl rand -base64 64)
-    networks:
-      - techreview-network
-    depends_on:
-      - mysql
-      - redis
     restart: unless-stopped
 
   frontend:
-    build:
-      context: ./blog-frontend
-      dockerfile: Dockerfile
+    build: ./blog-frontend
     container_name: techreview-frontend
     ports:
       - "3000:80"
-    networks:
-      - techreview-network
-    depends_on:
-      - backend
     restart: unless-stopped
 
   admin:
-    build:
-      context: ./blog-admin
-      dockerfile: Dockerfile
+    build: ./blog-admin
     container_name: techreview-admin
     ports:
       - "3001:80"
-    networks:
-      - techreview-network
-    depends_on:
-      - backend
     restart: unless-stopped
-
-volumes:
-  mysql_data:
-
-networks:
-  techreview-network:
-    driver: bridge
 EOF
 }
 
-# Main deployment
+# 3. 执行主流程
 main() {
-    log "Starting production deployment for $DOMAIN..."
+    log "开始为域名 $DOMAIN 部署应用..."
     
-    # Install dependencies
-    install_docker
-    install_nginx
+    # 执行编译
+    build_backend
     
-    # Build applications
-    cd blog-backend
-    if command -v mvn &> /dev/null; then
-        mvn clean package -DskipTests
-    else
-        docker run --rm -v "$(pwd)":/app -w /app maven:3.9-eclipse-temurin-21-alpine \
-            mvn clean package -DskipTests
-    fi
-    cd ..
-    
-    # Setup infrastructure
+    # 生成配置
     setup_docker_compose
-    setup_nginx
     
-    # Deploy
-    docker-compose -f docker-compose.prod.yml down 2>/dev/null || true
+    log "正在启动 Docker 容器 (后端、前端、管理后台)..."
+    # 使用 --build 确保代码更改生效
     docker-compose -f docker-compose.prod.yml up --build -d
     
-    # Setup SSL
-    setup_ssl
-    
-    log "Production deployment completed!"
-    log ""
-    log "Your website is now available at:"
-    log "  https://$DOMAIN"
-    log "  https://blog-admin.$DOMAIN"
-    log ""
-    log "Default login:"
-    log "  Admin:  admin / admin123"
-    log "  Editor: editor / editor123"
+    log "------------------------------------------------"
+    log "部署成功！"
+    log "请确保宿主机 Nginx 已指向以下端口："
+    log "  - 前端 (Blog): http://127.0.0.1:3000"
+    log "  - 后端 (Admin): http://127.0.0.1:3001"
+    log "------------------------------------------------"
 }
 
 main
