@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Smartphone, Home as HomeIcon, Plane, Sparkles, Shirt, Eye, Heart, ArrowRight } from 'lucide-react'
 import { articleApi, categoryApi } from '@/utils/api'
 import type { Article, Category } from '@/types'
-import { Zap, ... } from 'lucide-react'; 
+import { Zap, ... } from 'lucide-react'
 
 const categoryIcons: Record<string, React.ReactNode> = {
   beauty: <Sparkles className="w-8 h-8 stroke-[1.5]" />,
