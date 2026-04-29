@@ -1,22 +1,21 @@
 #!/bin/bash
 
-# TechReview Blog 生产环境部署脚本 (不含 Nginx 配置)
-# 适用：宿主机已手动配置 Nginx，且已安装 Docker, MySQL, Redis
+# TechReview Blog 部署脚本 (仅限 IP 访问，无域名，无 SSL)
+# 适用：宿主机已安装 Docker, MySQL, Redis
 
 set -e
 
 # --- 配置参数 ---
-DOMAIN=${1:-}
+# 现在只接收两个参数：数据库用户名 和 数据库密码
+DB_USER=${1:-"root"}
 DB_PASS=${2:-}
-DB_USER=${3:-"root"}
-REDIS_PASS=${4:-""} 
 
-# Docker 访问宿主机的默认 IP (用于连接宿主机的 MySQL 和 Redis)
+# Docker 访问宿主机的默认 IP
 HOST_IP="172.17.0.1"
 
-if [ -z "$DOMAIN" ] || [ -z "$DB_PASS" ]; then
-    echo "用法: ./deploy.sh <域名> <数据库密码> [数据库用户] [Redis密码]"
-    echo "示例: ./deploy.sh techreview.com root_password root redis_password"
+if [ -z "$DB_PASS" ]; then
+    echo "用法: ./deploy.sh <数据库密码> [数据库用户名]"
+    echo "示例: ./deploy.sh password123 root"
     exit 1
 fi
 
@@ -36,7 +35,7 @@ build_backend() {
     fi
 }
 
-# 2. 生成 Docker Compose (仅包含应用容器)
+# 2. 生成 Docker Compose
 setup_docker_compose() {
     log "生成 docker-compose.prod.yml..."
     cat > docker-compose.prod.yml << EOF
@@ -52,7 +51,6 @@ services:
       DB_PASSWORD: $DB_PASS
       REDIS_HOST: $HOST_IP
       REDIS_PORT: 6379
-      REDIS_PASSWORD: $REDIS_PASS
       JWT_SECRET: $(openssl rand -base64 64)
     restart: unless-stopped
 
@@ -72,25 +70,21 @@ services:
 EOF
 }
 
-# 3. 执行主流程
+# 3. 执行部署
 main() {
-    log "开始为域名 $DOMAIN 部署应用..."
+    log "开始部署应用 (数据库用户: $DB_USER)..."
     
-    # 执行编译
     build_backend
-    
-    # 生成配置
     setup_docker_compose
     
-    log "正在启动 Docker 容器 (后端、前端、管理后台)..."
-    # 使用 --build 确保代码更改生效
+    log "启动 Docker 容器..."
     docker-compose -f docker-compose.prod.yml up --build -d
     
     log "------------------------------------------------"
     log "部署成功！"
-    log "请确保宿主机 Nginx 已指向以下端口："
-    log "  - 前端 (Blog): http://127.0.0.1:3000"
-    log "  - 后端 (Admin): http://127.0.0.1:3001"
+    log "你可以通过以下地址访问："
+    log "  - 博客前端: http://服务器IP:3000"
+    log "  - 管理后台: http://服务器IP:3001"
     log "------------------------------------------------"
 }
 
