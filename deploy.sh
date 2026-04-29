@@ -62,8 +62,14 @@ else
     DOCKER_COMPOSE_CMD="docker-compose"
 fi
 
-echo "[INFO] 正在启动容器..."
-# 修改这一行，增加 --progress plain 参数
+echo "[INFO] 正在清理旧容器..."
+# 停止并移除旧的容器、网络
+$DOCKER_COMPOSE_CMD -f docker-compose.prod.yml down --remove-orphans || true
+
+# 强制删除可能残留的同名容器（防止意外冲突）
+docker rm -f techreview-backend techreview-frontend techreview-admin || true
+
+echo "[INFO] 正在启动新容器..."
 $DOCKER_COMPOSE_CMD -f docker-compose.prod.yml up --build -d
 
 echo "[INFO] 部署成功！"
