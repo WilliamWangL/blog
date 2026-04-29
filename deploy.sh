@@ -57,6 +57,6 @@ EOF
 
 # 3. 启动容器
 echo "[INFO] 正在启动 Docker 容器..."
-docker-compose -f docker-compose.prod.yml up --build -d
+docker compose -f docker-compose.prod.yml up --build -d
 
 echo "[INFO] 部署成功！"
