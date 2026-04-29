@@ -63,6 +63,7 @@ else
 fi
 
 echo "[INFO] 正在启动容器..."
-$DOCKER_COMPOSE_CMD -f docker-compose.prod.yml up --build -d
+# 修改这一行，增加 --progress plain 参数
+$DOCKER_COMPOSE_CMD -f docker-compose.prod.yml up --build -d --progress plain
 
 echo "[INFO] 部署成功！"
