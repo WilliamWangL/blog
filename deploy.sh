@@ -44,7 +44,7 @@ services:
     build: ./blog-frontend
     container_name: techreview-frontend
     ports:
-      - "3000:80"
+      - "3002:80"
     restart: unless-stopped
 
   admin:
