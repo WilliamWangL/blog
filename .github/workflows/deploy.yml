@@ -1,16 +1,19 @@
 name: Deploy to Private Server
-'on':
+
+on:
   push:
     branches:
       - main
-  workflow_dispatch: null
+  workflow_dispatch:
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Deploy files to Server
+
+      - name: Sync files to Server
         uses: easingthemes/ssh-deploy@main
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -21,11 +24,8 @@ jobs:
           REMOTE_PORT: ${{ secrets.SERVER_PORT || 22 }}
           TARGET: /opt/techreview-blog
           EXCLUDE: /.git/, /node_modules/, /.npm-cache/, /.qoder/, /.vscode/, /terminals/, /.cursor/
-          SCRIPT_AFTER: |
-            cd /opt/techreview-blog
-            chmod +x deploy-final.sh
-            ./deploy-final.sh techreview.com admin@email.com ${{ secrets.DB_PASSWORD }} ${{ secrets.DB_USERNAME }}
-      - name: Run deployment script
+
+      - name: Execute deployment script
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -34,15 +34,8 @@ jobs:
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
             cd /opt/techreview-blog
-
-            # 赋予脚本执行权限
-            chmod +x deploy-production.sh
+            # 确保脚本有执行权限
             chmod +x deploy.sh
-
-            # 执行生产环境部署脚本
-            # deploy-production.sh 包含了自动安装 Docker/Nginx、构建、起服务以及配置 SSL 的全套流程。
-            # 如果服务器是非 root 用户，请确保该用户具有免密 sudo 权限，或者直接使用 root 账户部署。
-            sudo ./deploy-production.sh ${{ secrets.DOMAIN_NAME }} ${{ secrets.SSL_EMAIL }}
-
-            # 备用方案：如果您暂无域名/不配置SSL，可以注释掉上面那行，改用下面的常规部署：
-            # sudo ./deploy.sh production
+            # 只执行这一个脚本，传入密码和用户名
+            # 第一个参数是 DB_PASSWORD，第二个是 DB_USERNAME
+            sudo ./deploy.sh "${{ secrets.DB_PASSWORD }}" "${{ secrets.DB_USERNAME }}"
