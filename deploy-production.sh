@@ -1,22 +1,22 @@
 #!/bin/bash
 
-# TechReview Blog 生产环境部署脚本
-# 适用：宿主机已安装 Docker, MySQL, Nginx, Redis
+# TechReview Blog 生产环境部署脚本 (不含 Nginx 配置)
+# 适用：宿主机已手动配置 Nginx，且已安装 Docker, MySQL, Redis
 
 set -e
 
 # --- 配置参数 ---
 DOMAIN=${1:-}
-EMAIL=${2:-}
-DB_PASS=${3:-}
-DB_USER=${4:-"root"}
-REDIS_PASS=${5:-""} # 如果你的 Redis 没密码，留空
+DB_PASS=${2:-}
+DB_USER=${3:-"root"}
+REDIS_PASS=${4:-""} 
 
-# Docker 访问宿主机的默认 IP
+# Docker 访问宿主机的默认 IP (用于连接宿主机的 MySQL 和 Redis)
 HOST_IP="172.17.0.1"
 
-if [ -z "$DOMAIN" ] || [ -z "$EMAIL" ] || [ -z "$DB_PASS" ]; then
-    echo "用法: ./deploy.sh <域名> <邮箱> <数据库密码> [数据库用户] [Redis密码]"
+if [ -z "$DOMAIN" ] || [ -z "$DB_PASS" ]; then
+    echo "用法: ./deploy.sh <域名> <数据库密码> [数据库用户] [Redis密码]"
+    echo "示例: ./deploy.sh techreview.com root_password root redis_password"
     exit 1
 fi
 
@@ -25,13 +25,18 @@ log() { echo -e "\033[32m[INFO]\033[0m $1"; }
 # 1. 编译后端
 build_backend() {
     log "正在通过 Docker 编译 Java 后端..."
-    cd blog-backend
-    docker run --rm -v "$(pwd)":/app -w /app maven:3.9-eclipse-temurin-21-alpine \
-        mvn clean package -DskipTests
-    cd ..
+    if [ -d "blog-backend" ]; then
+        cd blog-backend
+        docker run --rm -v "$(pwd)":/app -w /app maven:3.9-eclipse-temurin-21-alpine \
+            mvn clean package -DskipTests
+        cd ..
+    else
+        log "错误: 未找到 blog-backend 目录"
+        exit 1
+    fi
 }
 
-# 2. 生成 Docker Compose (仅包含应用)
+# 2. 生成 Docker Compose (仅包含应用容器)
 setup_docker_compose() {
     log "生成 docker-compose.prod.yml..."
     cat > docker-compose.prod.yml << EOF
@@ -67,54 +72,26 @@ services:
 EOF
 }
 
-# 3. 配置宿主机 Nginx
-setup_nginx() {
-    log "配置宿主机 Nginx..."
-    CONF_FILE="/etc/nginx/sites-available/techreview"
-    
-    sudo cat > $CONF_FILE << EOF
-server {
-    listen 80;
-    server_name $DOMAIN;
-    location / {
-        proxy_pass http://127.0.0.1:3000;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-    }
-}
-server {
-    listen 80;
-    server_name blog-admin.$DOMAIN;
-    location / {
-        proxy_pass http://127.0.0.1:3001;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-    }
-}
-EOF
-    sudo ln -sf $CONF_FILE /etc/nginx/sites-enabled/
-    sudo rm -f /etc/nginx/sites-enabled/default
-    sudo nginx -t && sudo systemctl restart nginx
-}
-
-# 4. 执行部署
+# 3. 执行主流程
 main() {
+    log "开始为域名 $DOMAIN 部署应用..."
+    
+    # 执行编译
     build_backend
+    
+    # 生成配置
     setup_docker_compose
     
-    log "启动应用容器..."
+    log "正在启动 Docker 容器 (后端、前端、管理后台)..."
+    # 使用 --build 确保代码更改生效
     docker-compose -f docker-compose.prod.yml up --build -d
     
-    setup_nginx
-    
-    log "申请 SSL 证书..."
-    sudo certbot --nginx -d $DOMAIN -d blog-admin.$DOMAIN --non-interactive --agree-tos --email $EMAIL
-    
+    log "------------------------------------------------"
     log "部署成功！"
+    log "请确保宿主机 Nginx 已指向以下端口："
+    log "  - 前端 (Blog): http://127.0.0.1:3000"
+    log "  - 后端 (Admin): http://127.0.0.1:3001"
+    log "------------------------------------------------"
 }
 
 main
