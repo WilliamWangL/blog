@@ -16,7 +16,7 @@ fi
 # 1. 编译后端
 echo "[INFO] 正在编译后端..."
 cd blog-backend
-docker run --rm -v "$(pwd)":/app -w /app maven:3.9-eclipse-temurin-21-alpine mvn clean package -DskipTests
+docker run --rm -v "$(pwd)":/app -w /app maven:3.9-eclipse-temurin-21-alpine mvn clean package -DskipTests -U
 cd ..
 
 # 2. 随机生成一个 JWT Secret (确保只有一行且无换行符)
