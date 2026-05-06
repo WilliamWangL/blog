@@ -39,11 +39,11 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/articles/**").permitAll()
-                .requestMatchers("/api/categories/**").permitAll()
+                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/articles/**").permitAll()
+                .requestMatchers("/categories/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
-                .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "EDITOR")
+                .requestMatchers("/admin/**").hasAnyRole("ADMIN", "EDITOR")
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
