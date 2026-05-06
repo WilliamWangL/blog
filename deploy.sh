@@ -30,6 +30,8 @@ services:
   backend:
     build: ./blog-backend
     container_name: techreview-backend
+    ports:
+      - "8080:8080"
     environment:
       DB_HOST: "$HOST_IP"
       DB_PORT: "3306"
