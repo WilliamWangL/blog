@@ -18,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.config.Customizer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -39,11 +40,11 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/articles/**").permitAll()
-                .requestMatchers("/categories/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
-                .requestMatchers("/admin/**").hasAnyRole("ADMIN", "EDITOR")
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/auth/**")).permitAll()
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/admin/**")).hasAnyRole("ADMIN", "EDITOR")
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/articles/**")).permitAll()
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/categories/**")).permitAll()
+                .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/**")).permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
