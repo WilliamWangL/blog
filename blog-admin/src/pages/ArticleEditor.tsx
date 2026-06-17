@@ -33,11 +33,11 @@ export default function ArticleEditor() {
     queryFn: () => categoryApi.getCategories(),
   })
 
-  const categories = categoriesData?.data?.data || []
+  const categories = categoriesData?.data || []
 
   useEffect(() => {
-    if (articleData?.data?.data) {
-      setFormData(articleData.data.data)
+    if (articleData?.data) {
+      setFormData(articleData.data)
     }
   }, [articleData])
 

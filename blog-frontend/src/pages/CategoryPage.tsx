@@ -20,8 +20,8 @@ export default function CategoryPage() {
     enabled: !!slug,
   })
 
-  const category = categoryData?.data?.data
-  const articles = articlesData?.data?.data?.records || []
+  const category = categoryData?.data
+  const articles = articlesData?.data?.records || []
 
   return (
     <div className="min-h-screen bg-gray-50/50 dark:bg-black/20">

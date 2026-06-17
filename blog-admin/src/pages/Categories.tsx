@@ -46,7 +46,7 @@ export default function Categories() {
     },
   })
 
-  const categories = data?.data?.data || []
+  const categories = data?.data || []
 
   const openModal = (category?: Category) => {
     if (category) {

@@ -36,9 +36,9 @@ export default function Home() {
     queryFn: () => categoryApi.getCategories(),
   })
 
-  const articles = articlesData?.data?.data?.records || []
-  const featuredArticles = featuredData?.data?.data || []
-  const categories = categoriesData?.data?.data || []
+  const articles = articlesData?.data?.records || []
+  const featuredArticles = featuredData?.data || []
+  const categories = categoriesData?.data || []
 
   return (
     <div>
