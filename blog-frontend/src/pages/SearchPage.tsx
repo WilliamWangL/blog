@@ -15,7 +15,7 @@ export default function SearchPage() {
     enabled: query.length > 0,
   })
 
-  const articles = data?.data?.data?.records || []
+  const articles = data?.data?.records || []
 
   return (
     <div className="min-h-screen bg-gray-50/50 dark:bg-black/20">

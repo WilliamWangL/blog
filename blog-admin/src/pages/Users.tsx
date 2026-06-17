@@ -9,7 +9,7 @@ export default function Users() {
     queryFn: () => userApi.getUsers(1, 20),
   })
 
-  const users = data?.data?.data?.records || []
+  const users = data?.data?.records || []
 
   const getRoleBadge = (role: string) => {
     switch (role) {

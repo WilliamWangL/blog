@@ -13,7 +13,7 @@ export default function ArticleDetail() {
     enabled: !!slug,
   })
 
-  const article = data?.data?.data
+  const article = data?.data
 
   if (isLoading) {
     return (

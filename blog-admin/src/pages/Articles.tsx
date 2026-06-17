@@ -10,7 +10,7 @@ export default function Articles() {
     queryFn: () => articleApi.getArticles(1, 20),
   })
 
-  const articles = data?.data?.data?.records || []
+  const articles = data?.data?.records || []
 
   const getStatusBadge = (status: number) => {
     switch (status) {
