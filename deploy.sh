@@ -7,11 +7,15 @@ set -e
 DB_PASS="${1:-}"
 DB_USER="${2:-"root"}"
 HOST_IP="172.17.0.1"
+LOG_DIR="/var/log/techreview-blog"
 
 if [ -z "$DB_PASS" ]; then
     echo "[ERROR] 必须提供数据库密码"
     exit 1
 fi
+
+# 创建日志目录
+mkdir -p "$LOG_DIR"
 
 # 1. 编译后端
 echo "[INFO] 正在编译后端..."
@@ -40,6 +44,8 @@ services:
       REDIS_HOST: "$HOST_IP"
       REDIS_PORT: "6379"
       JWT_SECRET: "$MY_JWT_SECRET"
+    volumes:
+      - $LOG_DIR:/var/log/techreview-blog
     restart: unless-stopped
 
   frontend:
