@@ -19,12 +19,12 @@ export default function Login() {
 
     try {
       const response = await authApi.login({ username, password })
-      if (response.data.code === 200) {
-        const { token, user } = response.data.data
+      if (response.code === 200) {
+        const { token, user } = response.data
         login(user, token)
         navigate('/')
       } else {
-        setError(response.data.message || 'Login failed')
+        setError(response.message || 'Login failed')
       }
     } catch (err) {
       setError('Invalid credentials')
